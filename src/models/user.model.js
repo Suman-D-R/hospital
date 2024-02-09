@@ -1,29 +1,25 @@
-import { boolean } from '@hapi/joi';
 import { Schema, model } from 'mongoose';
 
-const userSchema = new Schema(
-  {
-    firstName: {
-      type: String
-    },
-    lastName: {
-      type: String
+const userSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
     },
     email: {
-      type: String,
-      unique: true
+        type: String,
+        required: true,
+        unique: true
     },
     password: {
-      type: String
+        type: String,
+        required: true
     },
-    admin:{
-      type: Boolean,
-      default: false
+    role: {
+        type: String,
+        enum: ['admin', 'doctor', 'patient'],
+        required: true
     }
-  },
-  {
-    timestamps: true
-  }
-);
+});
 
-export default model('User', userSchema);
+export default model('Users',userSchema);
