@@ -1,4 +1,5 @@
 import Appointment from '../models/appointment.model';
+import mongoose from 'mongoose';
 
 export const createAppointment = async (appointmentData) => {
     try {
@@ -51,3 +52,87 @@ export const deleteAppointmentById = async (appointmentId) => {
         throw error;
     }
 };
+
+
+export const getTotalCountAndAppointmentsByDoctor = async () => {
+    try {
+        const totalCountAndAppointments = await Appointment.aggregate([
+            {
+                $group: {
+                    _id: '$doctorId',
+                    count: { $sum: 1 },
+                    appointments: { $push: '$$ROOT' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'doctors', 
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'doctor'
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    doctorId: '$_id',
+                    count: 1,
+                    doctorName: { $arrayElemAt: ['$doctor.name', 0] },
+                    appointments: 1
+                }
+            }
+        ]);
+
+        return totalCountAndAppointments.map(item => ({
+            doctorId: item.doctorId,
+            doctorName: item.doctorName,
+            count: item.count,
+            appointments: item.appointments
+        }));
+    } catch (error) {
+        throw error;
+    }
+};
+
+
+
+export const getCountByDoctor = async (doctorId) => {
+    try {
+        const countAndAppointments = await Appointment.aggregate([
+            {
+                $match: {
+                    doctorId: mongoose.Types.ObjectId(doctorId)
+                }
+            },
+            {
+                $group: {
+                    _id: '$doctorId',
+                    count: { $sum: 1 },
+                    appointments: { $push: '$$ROOT' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'doctors', 
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'doctor'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    count: 1,
+                    doctorId: { $arrayElemAt: ['$doctor._id', 0] },
+                    doctorName: { $arrayElemAt: ['$doctor.name', 0] },
+                    appointments: 1
+                }
+            }
+        ]);
+
+        return countAndAppointments.length > 0 ? countAndAppointments[0] : { doctorId, doctorName: 'Unknown', count: 0, appointments: [] };
+    } catch (error) {
+        throw error;
+    }
+};
+

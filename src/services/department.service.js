@@ -2,6 +2,7 @@ import Department from '../models/department.model';
 
 export const createDepartment = async (departmentData) => {
     try {
+        
         return await Department.create(departmentData);
     } catch (error) {
         throw error;

@@ -1,15 +1,55 @@
 import User from '../models/user.model';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-// Function to create a new user
-export const createUser = async (userData) => {
+export const loginUser = async (userDetails) => {
+
+    const user = await User.findOne({ email: userDetails.email });
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+  
+    const passwordMatch = await bcrypt.compare(
+      userDetails.password,
+      user.password
+    );
+  
+    if (!passwordMatch) {
+      throw new Error('Password not matched');
+    }
+  
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, name: user.username },
+      process.env.SECRET_KEY 
+    );
+
+
+  
+    return {token:token,role:user.role}; 
+  };
+
+  export const createUser = async (userData) => {
     try {
-        const data = await User.create(userData);
-        console.log(data)
-        return data
+        const existingUser = await User.findOne({ email: userData.email });
+        
+        if (existingUser) {
+            console.log("User already exists");
+            return existingUser; 
+        }
+        const hashedPassword = await bcrypt.hash(userData.password, 10); 
+        const newUser = await User.create({
+            ...userData,
+            password: hashedPassword
+        });
+        
+        console.log(newUser);
+        return newUser;
     } catch (error) {
         throw error;
     }
 };
+
 
 // Function to get all users
 export const getAllUsers = async () => {

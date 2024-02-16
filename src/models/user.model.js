@@ -13,12 +13,13 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        // required: true
     },
     role: {
         type: String,
         enum: ['admin', 'doctor', 'patient'],
-        required: true
+        required: true,
+        default: 'patient'
     }
 });
 

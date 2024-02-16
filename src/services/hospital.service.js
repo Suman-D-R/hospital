@@ -2,6 +2,7 @@ import Hospital from '../models/hospital.model';
 
 export const createHospital = async (hospitalData) => {
     try {
+        console.log(hospitalData)
         return await Hospital.create(hospitalData);
     } catch (error) {
         throw error;

@@ -43,7 +43,7 @@ export const newDocterValidator = async (req, res, next) => {
   });
 
   try {
-    const { error } = schema.validate(req.body.role = 'doctor');
+    const { error } = schema.validate(req.body);
 
     if (error) {
       return res.status(400).json({
@@ -51,6 +51,7 @@ export const newDocterValidator = async (req, res, next) => {
         message: error.message
       });
     }
+    req.body.role = 'doctor'
     next();
   } catch (error) {
     return res.status(500).json({
@@ -72,7 +73,7 @@ export const newAdminValidator = async (req, res, next) => {
   });
 
   try {
-    const { error } = schema.validate(req.body.role = 'admin');
+    const { error } = schema.validate(req.body);
 
     if (error) {
       return res.status(400).json({
@@ -80,6 +81,7 @@ export const newAdminValidator = async (req, res, next) => {
         message: error.message
       });
     }
+    req.body.role = 'admin'
     next();
   } catch (error) {
     return res.status(500).json({

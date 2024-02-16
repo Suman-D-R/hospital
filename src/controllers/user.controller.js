@@ -11,6 +11,15 @@ export const createUser = async (req, res) => {
     }
 };
 
+export const loginUser = async (req, res) => {
+    try {
+        const newUser = await UserService.loginUser(req.body);
+        res.status(HttpStatus.OK).json(newUser);
+    } catch (error) {
+        res.status(HttpStatus.BAD_REQUEST).json({ error: error.message });
+    }
+};
+
 // Function to get all users
 export const getAllUsers = async (req, res) => {
     try {

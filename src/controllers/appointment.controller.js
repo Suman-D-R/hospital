@@ -37,6 +37,25 @@ export const updateAppointmentById = async (req, res) => {
     }
 };
 
+export const getTotalCountByDoctor = async (req, res) => {
+    try {
+        const totalCountByDoctor = await AppointmentService.getTotalCountAndAppointmentsByDoctor();
+        res.status(HttpStatus.OK).json(totalCountByDoctor);
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
+
+export const getCountByDoctor = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+        const count = await AppointmentService.getCountByDoctor(doctorId);
+        res.status(HttpStatus.OK).json({ count });
+    } catch (error) {
+        res.status(HttpStatus.BAD_REQUEST).json({ error: error.message });
+    }
+};
+
 export const deleteAppointmentById = async (req, res) => {
     try {
         const deletedAppointment = await AppointmentService.deleteAppointmentById(req.params.appointmentId);
